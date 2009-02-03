@@ -15,7 +15,7 @@ class ConaryPk:
 
         cli = ConaryClient(cfg)
 
-        # labels
+        # labels enable on /etc/conary/config.d/
         self.default_label = self.cfg.installLabelPath
 
         # get if x86 or x86_64
@@ -53,7 +53,7 @@ class ConaryPk:
         """ do a conary query """
         db = self._get_db()
         try:
-            troves = db.findTrove(None,(name,None,None))
+            troves = db.findTrove( None ,(name , None, None ))
             return db.getTroves(troves)
         except:
             return []
@@ -69,12 +69,12 @@ class ConaryPk:
             return []
 
     def get_metadata( self, name , installLabel = None):
-        self._set_repos(installLabel)
-        repos = self._get_repos()
+        label = self.label(installLabel)
+        pass
 
 if __name__ == "__main__":
     conary = ConaryPk()
    # print conary.query("gimp")
    # print conary.query("gimpasdas")
-    print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
-   # print conary.request_query("gimp")
+   # print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
+    print conary.request_query("gimp")
