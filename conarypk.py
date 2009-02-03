@@ -1,16 +1,30 @@
 #!/usr/bin/python
 from conary.conaryclient import ConaryClient
+from conary import conarycfg
 from conary.versions import Label
 from conary.errors import TroveNotFound
 
 
 class ConaryPk:
-    def __init__(self, installlabel):
+    def __init__(self):
+        # get configs from /etc/conary
+        cfg = conarycfg.ConaryConfiguration(True)
+        # get if the machine its x86 or x86_64
+        cfg.initializeFlavors()
+        self.cfg = cfg
 
-        self.default_label = Label(installlabel)
-        cli = ConaryClient()
+        cli = ConaryClient(cfg)
+
+        # labels
+        self.default_label = self.cfg.installLabelPath
+
+        # get if x86 or x86_64
+        self.flavor = self.cfg.flavor[0]
+        # for client
         self.cli = cli
+        # for query on system (database)
         self.db = cli.db
+        # for request query on repository (repos)
         self.repos = cli.repos
 
     def _get_db(self):
@@ -21,18 +35,17 @@ class ConaryPk:
 
     def _set_label(self, installLabel=None):
         if installLabel:
-            self.label = Label(installLabel)
+            self.other_label = Label(installLabel)
 
     def _get_label(self):
         try:
-            return self.label
+            return self.other_label
         except AttributeError:
             return self.default_label
 
-    def get_label(self, installLabel = None):
+    def label(self, installLabel = None):
         if installLabel:
             self._set_label(installLabel)
-        
         return self._get_label()
 
         
@@ -47,10 +60,10 @@ class ConaryPk:
 
     def request_query(self, name, installLabel = None):
         """ Do a conary request query """
-        label = self.get_label( installLabel )
+        label = self.label( installLabel )
         repos = self._get_repos()
         try:
-            troves = repos.findTrove(label, (name,None,None))
+            troves = repos.findTrove( label ,( name, None ,self.flavor ) )
             return repos.getTroves(troves)
         except TroveNotFound:
             return []
@@ -60,8 +73,8 @@ class ConaryPk:
         repos = self._get_repos()
 
 if __name__ == "__main__":
-    conary = ConaryPk('foresight.rpath.org@fl:2')
+    conary = ConaryPk()
    # print conary.query("gimp")
    # print conary.query("gimpasdas")
-   # print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
-    print conary.request_query("dpaster")
+    print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
+   # print conary.request_query("gimp")
