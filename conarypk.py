@@ -55,7 +55,7 @@ class ConaryPk:
         try:
             troves = db.findTrove( None ,(name , None, None ))
             return db.getTroves(troves)
-        except:
+        except TroveNotFound:
             return []
 
     def request_query(self, name, installLabel = None):
