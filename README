@@ -5,4 +5,7 @@ So with this im try to make for other people use a conary api
 And help to make more Module the conary backend on Packagekit
 
 zodman@foresightlinux.org
-under the WTFPL http://sam.zoy.org/wtfpl/
+my code/lib its under the WTFPL http://sam.zoy.org/wtfpl/
+and conary is Copyright (c) 2004-2008 rPath, Inc. 
+using the http://www.rpath.com/permanent/licenses/CPL-1.0
+
