@@ -33,22 +33,11 @@ class ConaryPk:
     def _get_repos(self):
         return self.repos
 
-    def _set_label(self, installLabel=None):
-        if installLabel:
-            self.other_label = Label(installLabel)
-
-    def _get_label(self):
-        try:
-            return self.other_label
-        except AttributeError:
-            return self.default_label
-
     def label(self, installLabel = None):
         if installLabel:
-            self._set_label(installLabel)
-        return self._get_label()
+            return Label(installLabel)
+        return self.default_label
 
-        
     def query(self, name):
         """ do a conary query """
         db = self._get_db()
@@ -62,11 +51,11 @@ class ConaryPk:
         """ Do a conary request query """
         label = self.label( installLabel )
         repos = self._get_repos()
-        try:
-            troves = repos.findTrove( label ,( name, None ,self.flavor ) )
-            return repos.getTroves(troves)
-        except TroveNotFound:
-            return []
+        #try:
+        troves = repos.findTrove( label ,( name, None ,self.flavor ) )
+        return repos.getTroves(troves)
+       # except TroveNotFound:
+       #     return []
 
     def get_metadata( self, name , installLabel = None):
         label = self.label(installLabel)
@@ -74,7 +63,7 @@ class ConaryPk:
 
 if __name__ == "__main__":
     conary = ConaryPk()
-   # print conary.query("gimp")
-   # print conary.query("gimpasdas")
-   # print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
+    print conary.query("gimp")
+    print conary.query("gimpasdas")
+    print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
     print conary.request_query("gimp")
