@@ -7,6 +7,7 @@ from conary.conaryclient import ConaryClient, cmdline
 from conary import conarycfg
 from conary.versions import Label
 from conary.errors import TroveNotFound
+from conary.conaryclient.update import NoNewTrovesError
 
 
 class ConaryPk:
@@ -72,14 +73,20 @@ class ConaryPk:
     def update(self, name, installLabel= None):
         cli = self.cli
         #get a trove
-        troves = conary.request_query(name, installLabel)
+        troves = self.request_query(name, installLabel)
         for trove in troves:
             trovespec =  self.trove_to_spec( trove )
-        # create a Job
-        job = cli.newUpdateJob()
-        cli.prepareUpdateJob(job, cmdline.parseChangeList(trovespec))
-        cli.applyUpdateJob(job)
-        return "Update Success of %s" %  trovespec
+        try:
+            # create a Job
+            job = cli.newUpdateJob()
+            # Add Update task to Job
+            cli.prepareUpdateJob(job, cmdline.parseChangeList(trovespec))
+            # Apply the Job
+            cli.applyUpdateJob(job)
+            # im rulz
+            return "Update Success of %s" %  trovespec
+        except NoNewTrovesError:
+            return "no new Troves Found by %s " % trovespec
     
     def trove_to_spec(self, trove ):
         return cmdline.toTroveSpec( trove[0], str(trove[1]), None)
