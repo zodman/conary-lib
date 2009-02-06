@@ -70,12 +70,14 @@ class ConaryPk:
     def get_metadata( self, name , installLabel = None):
         pass
         
-    def update(self, name, installLabel= None):
+    def remove(self, name):
+        return self.update(name, remove = True )
+    def update(self, name, installLabel= None, remove  = False ):
         cli = self.cli
         #get a trove
         troves = self.request_query(name, installLabel)
         for trove in troves:
-            trovespec =  self.trove_to_spec( trove )
+            trovespec =  self.trove_to_spec( trove, remove )
         try:
             # create a Job
             job = cli.newUpdateJob()
@@ -88,8 +90,12 @@ class ConaryPk:
         except NoNewTrovesError:
             return "no new Troves Found by %s " % trovespec
     
-    def trove_to_spec(self, trove ):
-        return cmdline.toTroveSpec( trove[0], str(trove[1]), None)
+    def trove_to_spec(self, trove, remove = False ):
+        if remove:
+            tmp = '-'
+        else:
+            tmp = ""
+        return tmp + cmdline.toTroveSpec( trove[0], str(trove[1]), None)
 
 if __name__ == "__main__":
     conary = ConaryPk()
@@ -98,6 +104,6 @@ if __name__ == "__main__":
     #print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
     #print conary.request_query("gimp")
     #print conary.request_query("gimpasdasd")
-    #print conary.update("pastebinit")
-    print conary.update("iftop","zodyrepo.rpath.org@rpl:devel")
+    print conary.update("amsn")
+    print conary.remove("amsn")
 
