@@ -13,7 +13,7 @@ from conary.conaryclient.update import NoNewTrovesError
 class ConaryPk:
     def __init__(self):
         # get configs from /etc/conary
-        cfg = conarycfg.ConaryConfiguration(True)
+        cfg = conarycfg.ConaryConfiguration( readConfigFiles = True)
         # get if the machine its x86 or x86_64
         cfg.initializeFlavors()
         self.cfg = cfg
@@ -45,9 +45,16 @@ class ConaryPk:
         if installLabel:
             return Label(installLabel)
         return self.default_label
-
+    def get_labels_from_config(self):
+        labels = []
+        for i in self.default_label:
+            if "foresight.rpath.org" in i.asString():
+                labels.append(i.asString())
+        return labels
     def query(self, name):
         """ do a conary query """
+        if name is None or name == "":
+            return []
         db = self._get_db()
         try:
             troves = db.findTrove( None ,(name , None, None ))
@@ -91,6 +98,7 @@ class ConaryPk:
             return "no new Troves Found by %s " % trovespec
     
     def trove_to_spec(self, trove, remove = False ):
+        # add a -app=blah.rpath.org@rpl:devel for remove packages
         if remove:
             tmp = '-'
         else:
@@ -99,11 +107,11 @@ class ConaryPk:
 
 if __name__ == "__main__":
     conary = ConaryPk()
-    #print conary.query("gimp")
+    print conary.query("dpaster")
     #print conary.query("gimpasdas")
     #print conary.request_query("dpaster",'zodyrepo.rpath.org@rpl:devel')
     #print conary.request_query("gimp")
     #print conary.request_query("gimpasdasd")
-    print conary.update("amsn")
-    print conary.remove("amsn")
+    #print conary.update("amsn")
+    #print conary.remove("amsn")
 
