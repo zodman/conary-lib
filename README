@@ -9,3 +9,7 @@ my code/lib its under the WTFPL http://sam.zoy.org/wtfpl/
 and conary is Copyright (c) 2004-2008 rPath, Inc. 
 using the http://www.rpath.com/permanent/licenses/CPL-1.0
 
+
+for run:
+
+python conarypk.py
